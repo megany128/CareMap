@@ -10,12 +10,32 @@
     "eject": "expo eject"
   },
   "dependencies": {
-    "expo": "~44.0.0",
+    "@react-navigation/core": "^6.1.1",
+    "@react-navigation/native": "^6.0.7",
+    "@react-navigation/native-stack": "^6.3.0",
+    "expo": "^44.0.5",
+    "expo-location": "~14.0.1",
+    "expo-permissions": "~13.1.0",
     "expo-status-bar": "~1.2.0",
+    "firebase": "^9.6.5",
     "react": "17.0.1",
     "react-dom": "17.0.1",
     "react-native": "0.64.3",
-    "react-native-web": "0.17.1"
+    "react-native-dropdown-picker": "^5.3.0",
+    "react-native-google-place-picker": "^1.2.1",
+    "react-native-keyboard-aware-scroll-view": "^0.9.5",
+    "react-native-location-view": "^0.3.0",
+    "react-native-maps": "https://github.com/expo/react-native-maps.git",
+    "react-native-material-dropdown-v2-fixed": "^0.11.3",
+    "react-native-paper": "^4.11.2",
+    "react-native-safe-area-context": "3.3.2",
+    "react-native-screens": "~3.10.1",
+    "react-native-tag-select": "^2.0.0",
+    "react-native-vector-icons": "^9.0.0",
+    "react-native-web": "0.17.1",
+    "react-navigation": "^4.4.4",
+    "react-navigation-tabs": "^2.11.1",
+    "start": "^5.1.0"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9"
