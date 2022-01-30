@@ -11,18 +11,71 @@ import {
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 //import moment from 'moment'
 import DropDownPicker from 'react-native-dropdown-picker';
-//import { Dropdown } from 'react-native-material-dropdown-v2-fixed';
 import { TagSelect } from 'react-native-tag-select';
-import { SYSTEM_BRIGHTNESS } from 'expo-permissions';
+import * as Location from 'expo-location';
 
 export default class AddMarker extends React.Component {
     state = {
         name: '',
+        description: '',
         category: '',
-        color: ''
       };
+
+      constructor(props) {
+        super(props);
+        this.state = {
+          latitude: 0,
+          longitude: 0,
+          address: '',
+          error: null
+        }
+      }
+    
+       GetCurrentLocation = async () => {
+        this.setState({
+            locationRun: true
+        })
+        let { status } = await Location.requestForegroundPermissionsAsync();
+      
+        if (status !== 'granted') {
+          Alert.alert(
+            'Permission not granted',
+            'Allow the app to use location service.',
+            [{ text: 'OK' }],
+            { cancelable: false }
+          );
+        }
+      
+        let { coords } = await Location.getCurrentPositionAsync();  
+        if (coords) {
+          const { latitude, longitude } = coords;
+          let response = await Location.reverseGeocodeAsync({
+            latitude,
+            longitude
+          });
+          this.setState({
+            latitude: latitude,
+            longitude: longitude
+          })
+      
+          for (let item of response) {
+            let address = `${item.name}, ${item.street}, ${item.postalCode}, ${item.city}`;
+            console.log(address)
+            this.setState({
+              address: address
+            })
+          }
+        }
+      };
+
+      componentDidMount() {   
+        console.log('get location')
+        this.GetCurrentLocation()
+        console.log('address:', this.state.address)
+      }
       
     render() {
+        console.log('a:',this.state.address)
         const data = [
             { id: 1, label: 'Household goods', color: '#47CACC'},
             { id: 2, label: 'Groceries', color: '#63BCC9' },
@@ -40,8 +93,25 @@ export default class AddMarker extends React.Component {
             >
               <Text style={styles.title}>Add a Pin to the Map</Text>
 
+              {/* <LocationView
+                apiKey={"AIzaSyAnzhYFJDdQ1Xt8LcTQKHq524KnmX6P-_I"}
+                initialLocation={{
+                    latitude: 37.78825,
+                    longitude: -122.4324,
+                }}
+                /> */}
+              <Text style={styles.heading}>What's your name?</Text> 
+              <View style={[styles.inputView]}>
+              <TextInput
+                style={styles.inputText}
+                placeholder="Full name"
+                autoCorrect={true}
+                onChangeText={name => this.setState({ name })}
+                value={this.state.name}
+                />
+                </View> 
               <Text style={styles.heading}>What kind of help do you need?</Text>
-                <View style={{paddingLeft:10, marginVertical: 10}}> 
+                <View style={{paddingLeft:10, marginBottom: 10}}> 
                     <TagSelect
                         data={data}
                         ref={(tag) => {
@@ -60,12 +130,25 @@ export default class AddMarker extends React.Component {
               <TextInput
                 style={styles.description}
                 placeholder="Describe what kind of help you need"
-                onChangeText={name => this.setState({ name })}
+                onChangeText={description => this.setState({ description })}
                 multiline={true}
                 maxLength={300}
                 clearButtonMode='while-editing'
-                value={this.state.name}
+                value={this.state.description}
                 />
+                <Text style={styles.heading}>Location</Text>
+                {this.state.address != '' ? 
+                <View style={styles.inputView}>
+                    <TextInput
+                    style={styles.inputText}
+                    placeholder={this.state.address}
+                    autoCorrect={true}
+                    onChangeText={address => this.setState({ address })}
+                    value={this.state.address}
+                    />
+                </View> 
+                :
+                <Text style={{marginLeft:10, fontStyle: 'italic'}}>loading address...</Text>}
                 <TouchableHighlight
                 style={styles.button}
                 underlayColor="#63BCC9"
@@ -95,7 +178,8 @@ const styles = StyleSheet.create({
       shadowColor: "#000",
       shadowOffset: { width: 0, height: 2, },
       shadowOpacity: 0.2,
-      shadowRadius: 3.84
+      shadowRadius: 3.84,
+      marginLeft: 5
     },
     description: {
       width: "100%",
@@ -111,6 +195,7 @@ const styles = StyleSheet.create({
       shadowOpacity: 0.2,
       shadowRadius: 3.84,
       alignSelf: 'center',
+      marginLeft: 10
     },
     inputText: {
       color: "black",
@@ -131,7 +216,7 @@ const styles = StyleSheet.create({
       height: 50,
       alignItems: "center",
       justifyContent: "center",
-      marginVertical: 20,
+      marginVertical: 40,
       alignSelf: 'center',
     },
     buttonText: {
@@ -141,7 +226,7 @@ const styles = StyleSheet.create({
     },
     heading: {
       marginLeft: 10,
-      marginBottom: 10,
+      marginBottom: 20,
       fontSize: 15,
       color: '#4b4c4c',
       fontWeight: 'bold'

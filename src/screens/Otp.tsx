@@ -28,7 +28,7 @@ const Otp = ({ route, navigation }) => {
             if (!success) {
               setInvalidCode(true);
             }
-            success && navigation.replace("Gated");
+            success && navigation.replace("Map");
           });
         }}
       />
